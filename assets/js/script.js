@@ -153,12 +153,22 @@ function load(url) {
       });
     },
 
-    (progress) =>
+    (progress) =>{
+
+      let progressSet = 100.0 * (progress.loaded / progress.total);
+      if(progressSet >= 99){
+        document.getElementById("loading").textContent = ""
+      }else{
+        document.getElementById("loading").textContent = "Loading... "+ Math.round(progressSet) + " %"
+      }
+      console.log(typeof progressSet)
       console.log(
         "Loading model...",
-        100.0 * (progress.loaded / progress.total),
+        progressSet,
         "%"
-      ),
+      );
+    },
+
 
     (error) => console.error(error)
   );
