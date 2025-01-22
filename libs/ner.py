@@ -81,3 +81,16 @@ def training_lib():
   print("Entitas dalam teks:")
   for ent in doc.ents:
     print(f"{ent.text} ({ent.label_})")
+
+def search_entities_json(text):
+  entities_datasets = helpers.load_json("datasets/datasets_ner_entity.json")
+  result = []
+  for entities in entities_datasets:
+    for entity in entities["val"]:
+      if text.lower().find(entity.lower()) != -1:
+        result.append({
+          "text": entity,
+          "label": entities["label"],
+          "desc": entities["desc"]
+        })
+  return result

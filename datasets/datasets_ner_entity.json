@@ -1,8 +1,8 @@
 [
   {
-    "val": ["BKN", "Badan Kepegawaian Negara"],
-    "label": "ORG",
-    "desc": "Badan Kepegawaian Negara (BKN) adalah lembaga pemerintah di Indonesia yang memiliki tugas utama dalam mengelola dan mengembangkan sumber daya aparatur negara, khususnya yang berkaitan dengan kepegawaian. BKN bertanggung jawab atas perencanaan, pengembangan, dan pengawasan terhadap sistem kepegawaian di instansi pemerintah, termasuk pengelolaan data pegawai, pengangkatan, pemindahan, pemberhentian, serta peningkatan kualitas kompetensi aparatur sipil negara (ASN). BKN juga mengelola tes CPNS dan seleksi jabatan lainnya."
+    "val": ["Kamu", "SuripAI"],
+    "label": "PERSON",
+    "desc": "Saya adalah SuripAI yang dapat membantu anda. SuripAi dikembangkan oleh TIM Badan Kepegawaian Negara (BKN) untuk menjawab pertanyaan anda seputar layanan Kepegawaian di BKN"
   },
   {
     "val": ["Kepala BKN"],
@@ -13,6 +13,11 @@
     "val": ["Zudan", "Arif", "Fakrulloh", "Zudan Arif Fakrulloh", "Pak Zudan"],
     "label": "PERSON",
     "desc": ""
+  },
+  {
+    "val": ["BKN", "Badan Kepegawaian Negara"],
+    "label": "ORG",
+    "desc": "Badan Kepegawaian Negara (BKN) adalah lembaga pemerintah di Indonesia yang memiliki tugas utama dalam mengelola dan mengembangkan sumber daya aparatur negara, khususnya yang berkaitan dengan kepegawaian. BKN bertanggung jawab atas perencanaan, pengembangan, dan pengawasan terhadap sistem kepegawaian di instansi pemerintah, termasuk pengelolaan data pegawai, pengangkatan, pemindahan, pemberhentian, serta peningkatan kualitas kompetensi aparatur sipil negara (ASN). BKN juga mengelola tes CPNS dan seleksi jabatan lainnya."
   },
   {
     "val": ["Sleman"],
