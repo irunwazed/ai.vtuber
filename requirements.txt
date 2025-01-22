@@ -1,0 +1,10 @@
+numpy
+scikit-learn
+tensorflow
+pandas
+joblib
+spacy
+ollama
+beautifulsoup4
+fastapi
+uvicorn

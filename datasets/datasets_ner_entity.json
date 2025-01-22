@@ -1,0 +1,102 @@
+[
+  {
+    "val": ["BKN", "Badan Kepegawaian Negara"],
+    "label": "ORG",
+    "desc": "Badan Kepegawaian Negara (BKN) adalah lembaga pemerintah di Indonesia yang memiliki tugas utama dalam mengelola dan mengembangkan sumber daya aparatur negara, khususnya yang berkaitan dengan kepegawaian. BKN bertanggung jawab atas perencanaan, pengembangan, dan pengawasan terhadap sistem kepegawaian di instansi pemerintah, termasuk pengelolaan data pegawai, pengangkatan, pemindahan, pemberhentian, serta peningkatan kualitas kompetensi aparatur sipil negara (ASN). BKN juga mengelola tes CPNS dan seleksi jabatan lainnya."
+  },
+  {
+    "val": ["Kepala BKN"],
+    "label": "JOB",
+    "desc": "Zudan Arif Fakrulloh (lahir 24 Agustus 1969) adalah seorang birokrat Indonesia yang menjabat sebagai Kepala Badan Kepegawaian Negara (BKN) sejak 7 Januari 2025. Sebelumnya, ia pernah menjabat sebagai Penjabat Gubernur Sulawesi Selatan sejak 17 Mei 2024. merangkap Sekretaris Badan Nasional Pengelola Perbatasan sejak 15 Maret 2023. Sebelum itu, ia juga pernah menjabat sebagai Direktur Jenderal Kependudukan dan Pencatatan Sipil, Kementerian Dalam Negeri sejak 1 Juli 2015 hingga 15 Maret 2023 serta Penjabat Gubernur Gorontalo sejak 28 Oktober 2016 hingga 12 Mei 2017."
+  },
+  {
+    "val": ["Zudan", "Arif", "Fakrulloh", "Zudan Arif Fakrulloh", "Pak Zudan"],
+    "label": "PERSON",
+    "desc": ""
+  },
+  {
+    "val": ["Sleman"],
+    "label": "GPE",
+    "desc": ""
+  },
+  {
+    "val": ["Daerah Istimewa Yogyakarta", "Yogyakarta", "DIY"],
+    "label": "GPE",
+    "desc": ""
+  },
+  {
+    "val": ["Universitas Sebelas Maret", "USM"],
+    "label": "ORG",
+    "desc": ""
+  },
+  {
+    "val": ["Universitas Diponegoro", "UNDIP"],
+    "label": "ORG",
+    "desc": ""
+  },
+  {
+    "val": ["Doktor"],
+    "label": "JOB",
+    "desc": ""
+  },
+  {
+    "val": ["CPNS"],
+    "label": "JOB",
+    "desc": ""
+  },
+  {
+    "val": ["Kementerian Dalam Negeri", "Kemendagri"],
+    "label": "ORG",
+    "desc": ""
+  },
+  {
+    "val": ["PNS"],
+    "label": "JOB",
+    "desc": ""
+  },
+  {
+    "val": ["JPT Pratama"],
+    "label": "JOB",
+    "desc": ""
+  },
+  {
+    "val": ["JPT Pratama"],
+    "label": "JOB",
+    "desc": ""
+  },
+  {
+    "val": ["Gorantalo"],
+    "label": "GPE",
+    "desc": ""
+  },
+  {
+    "val": ["Sulawesi Barat", "Sulbar"],
+    "label": "GPE",
+    "desc": ""
+  },
+  {
+    "val": ["Sulawesi Selatan", "Sulsel"],
+    "label": "GPE",
+    "desc": ""
+  },
+  {
+    "val": ["Jakarta"],
+    "label": "GPE",
+    "desc": ""
+  },
+  {
+    "val": ["Prabowo Subianto", "Prabowo"],
+    "label": "PERSON",
+    "desc": ""
+  },
+  {
+    "val": ["Pimpinan Tinggi Utama"],
+    "label": "JOB",
+    "desc": ""
+  },
+  {
+    "val": ["Presiden"],
+    "label": "JOB",
+    "desc": ""
+  }
+]

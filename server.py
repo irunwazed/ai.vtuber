@@ -1,9 +1,9 @@
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
-from fastapi import Request
-import uvicorn
-from fastapi.staticfiles import StaticFiles
+from fastapi import FastAPI # type: ignore
+from fastapi.responses import HTMLResponse # type: ignore
+from fastapi.templating import Jinja2Templates # type: ignore
+from fastapi import Request # type: ignore
+from fastapi.staticfiles import StaticFiles # type: ignore
+import uvicorn # type: ignore
 
 
 

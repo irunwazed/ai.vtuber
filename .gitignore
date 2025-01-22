@@ -1,0 +1,9 @@
+.env
+
+
+libs/__pycache__
+
+/models/*.pkl
+models/ner_bkn
+
+temp/*.json
