@@ -41,7 +41,36 @@
         color: rgb(231, 231, 22);
         font-weight: bold;
       }
+
+      .chat {
+        position: absolute;
+        right: 50px;
+        bottom: 50px;
+        z-index: 20;
+      }
+
+      .chat-view {
+        height: 500px;
+        width: 300px;
+        background-color: white;
+      }
+      li:nth-child(odd) {
+            color: #8f8456; /* Warna latar belakang kuning */
+        }
+
+        /* Warna untuk item genap */
+        li:nth-child(even) {
+            color: #18841d; /* Warna latar belakang hijau */
+        }
+        #chat-isi{
+          display: flex;
+          gap: 6px;
+          flex-direction: column;
+          padding: 10px;
+        }
     </style>
+
+    <!-- <script src="https://unpkg.com/@tailwindcss/browser@4"></script> -->
   </head>
 
   <body>
@@ -52,6 +81,16 @@
     </video>
 
     <div style="position: absolute; color: white; font-family: 15;" id="loading"></div>
+    <div class="chat">
+      <div class="chat-view">
+        <ul id="chat-isi">
+        </ul>
+      </div>
+      <div>
+        <input class="bg-white border-2 border-slate-800 py-2 px-4" id="chat-input" type="text" >
+        <button onclick="chat()">Kirim</button>
+      </div>
+    </div>
 
     <div>
       <div id="txt-input"></div>
@@ -82,6 +121,54 @@
         }, 100);
       }
       subLoop();
+    </script>
+
+    <script>
+      var speak = 0;
+      const chatIsi = document.getElementById("chat-isi");
+      const inputChat = document.getElementById("chat-input");
+
+      async function send_chat(text) {
+        const url = "/chat?chat="+text;
+        let result = "Maaf saya tidak bisa menjawab!"
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+          }
+
+          const json = await response.json();
+
+          // console.log(json);
+          result =  json.message
+        } catch (error) {
+          console.error(error.message);
+        }
+
+        return result
+      }
+
+      function chat_append(respon){
+        const responseMessage = document.createElement("li");
+        responseMessage.innerHTML = respon;
+        chatIsi.appendChild(responseMessage);
+      }
+
+      async function chat(){
+        // console.log("inputChat.value", inputChat.value)inputChat.value
+        const val = inputChat.value
+        inputChat.value = ""
+        chat_append(val)
+        // chatIsi.appendChild(document.createTextNode("<li>"+val+"</li>"));
+        const respon = await send_chat(val)
+        speak = respon.length*10
+        chat_append(respon)
+        // chatIsi.appendChild(document.createTextNode("<li>"+respon+"</li>"));
+        
+      }
+
+
+
     </script>
 
     <!-- three.min.js r110 -->

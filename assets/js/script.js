@@ -174,10 +174,8 @@ function load(url) {
   );
 }
 
-// beware of CORS errors when using this locally. If you can't https, import the required libraries.
-// load( 'https://automattic.github.io/VU-VRM/assets/VU-VRM-elf.vrm' );
 load("./assets/vrm/simple.vrm");
-// load( './assets/vrm/TVhead_VRM.vrm' );
+// load( './assets/vrm/hellP2.vrm' );
 
 // grid / axis helpers
 //			const gridHelper = new THREE.GridHelper( 10, 10 );
@@ -189,12 +187,44 @@ load("./assets/vrm/simple.vrm");
 
 const clock = new THREE.Clock();
 
+let iterasi = 0
+let operasi = 1
 function animate() {
   requestAnimationFrame(animate);
 
   const deltaTime = clock.getDelta();
 
   if (currentVrm) {
+
+    if(speak > 0){
+
+      if(iterasi > 100){
+        operasi = -5
+      }
+      
+      if(iterasi < 0){
+        operasi = 5
+      }
+      iterasi += operasi
+  
+      currentVrm.blendShapeProxy.setValue(
+        THREE.VRMSchema.BlendShapePresetName.A,
+        iterasi /100
+      );
+      speak -= 1;
+    }else{
+      if(iterasi > 0){
+        operasi = -5
+        iterasi += operasi
+
+        currentVrm.blendShapeProxy.setValue(
+          THREE.VRMSchema.BlendShapePresetName.A,
+          iterasi /100
+        );
+      }
+    }
+
+
     // update vrm
     currentVrm.update(deltaTime);
   }
@@ -202,6 +232,43 @@ function animate() {
 }
 
 animate();
+
+console.log("speak", speak)
+
+// Cek apakah browser mendukung Web Audio API
+// if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+//   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+//   navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+//     const source = audioContext.createMediaStreamSource(stream);
+//     const analyser = audioContext.createAnalyser();
+
+//     analyser.fftSize = 2048; // Atur ukuran FFT
+//     const bufferLength = analyser.frequencyBinCount;
+//     const dataArray = new Uint8Array(bufferLength);
+
+//     source.connect(analyser);
+
+//     const draw = () => {
+//       analyser.getByteFrequencyData(dataArray);
+
+//       // Normalisasi data frekuensi ke rentang 0 - 1
+//       const normalizedData = Array.from(dataArray).map(value => value / 255);
+
+//       console.log(normalizedData); // Data normalisasi
+
+//       requestAnimationFrame(draw);
+//     };
+
+//     draw(); // Mulai membaca data
+//   }).catch((err) => {
+//     console.error('Error accessing audio input:', err);
+//   });
+// } else {
+//   console.error('Web Audio API is not supported in this browser.');
+// }
+
+
 
 // mic listener - get a value
 navigator.mediaDevices
@@ -222,6 +289,8 @@ navigator.mediaDevices
       analyser.connect(javascriptNode);
       javascriptNode.connect(audioContext.destination);
 
+      // console.log("tesss")
+
       javascriptNode.onaudioprocess = function () {
         var array = new Uint8Array(analyser.frequencyBinCount);
         analyser.getByteFrequencyData(array);
@@ -232,6 +301,9 @@ navigator.mediaDevices
           values += array[i];
         }
 
+        // console.log("tesss")
+        // values = 100000
+
         // audio in expressed as one number
         var average = values / length;
         var inputvolume = average;
@@ -241,7 +313,7 @@ navigator.mediaDevices
         // useful for mouth shape variance
 
         // move the interface slider
-        document.getElementById("inputlevel").value = inputvolume;
+        // document.getElementById("inputlevel").value = inputvolume;
 
         // mic based / endless animations (do stuff)
 
