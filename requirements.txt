@@ -8,3 +8,6 @@ ollama
 beautifulsoup4
 fastapi
 uvicorn
+PyMuPDF
+PyPDF2
+nltk

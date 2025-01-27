@@ -7,3 +7,5 @@ libs/__pycache__
 models/ner_bkn
 
 temp/*.json
+
+.DS_Store

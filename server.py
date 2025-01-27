@@ -2,32 +2,30 @@ from fastapi import FastAPI, Request # type: ignore
 from fastapi.responses import HTMLResponse, JSONResponse # type: ignore
 from fastapi.templating import Jinja2Templates # type: ignore
 from fastapi.staticfiles import StaticFiles # type: ignore
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn # type: ignore
+from libs import helpers
 
-from libs import helpers, llm, class_jenis
-from libs import ner
-
-
-def chat_bkn(question):
-  jenis = class_jenis.check_class_once(question)
-  entities = ner.search_entities_json(question)
-
-  result = "Maaf saya tidak mengerti"
-  try:
-    if len(entities) > 0:
-      if jenis == "request_what":
-        result = llm.ollama_chat("Jelaskan secara singkat mengenai ini : "+entities[0]["desc"])
-      elif jenis == "request_who":
-        result = llm.ollama_chat("Jelaskan secara singkat Siapa itu : "+entities[0]["text"]+" dengan deskripsi singkat "+ entities[0]["desc"])
-    else:
-      result = llm.ollama_chat("Jawab secara singkat pertanyaan ini : "+question)
-  except Exception as e:
-    print("ERROR : ", e)
-
-  return result
+from repositories import chatbot
 
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:3000",  # Contoh untuk aplikasi frontend lokal
+    "http://example.com",     # Domain lain yang diizinkan
+    "*",                      # Gunakan "*" untuk mengizinkan semua origin (tidak direkomendasikan untuk produksi)
+]
+
+# Menambahkan middleware CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Daftar asal yang diizinkan
+    allow_credentials=True, # Jika Anda mengizinkan pengiriman cookies atau token melalui CORS
+    allow_methods=["*"],    # Metode HTTP yang diizinkan (GET, POST, dll.)
+    allow_headers=["*"],    # Header yang diizinkan
+)
+
 # Mount the static directory for serving files like CSS, JS, etc.
 app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
@@ -40,11 +38,17 @@ async def read_root(request: Request):
 
 
 @app.get("/chat", response_class=HTMLResponse)
-async def chat(chat:str):
-    message = chat_bkn(chat)
+async def chat_message(chat:str):
+    message = chatbot.chat_bkn(chat)
     result =  {"message": message}
     return JSONResponse(content=result)
-    # return templates.TemplateResponse("index.html", {"request": request})
+
+@app.get("/chat-data", response_class=HTMLResponse)
+async def chat_message(chat:str):
+    data = helpers.load_file("data.txt")
+    message = chatbot.chat_with_context(data, chat)
+    result =  {"message": message}
+    return JSONResponse(content=result)
 
 if __name__ == "__main__":
-    uvicorn.run("server:app", host="0.0.0.0", port=9002, reload=True)
+    uvicorn.run("server:app", host="0.0.0.0", port=9003, reload=True)
