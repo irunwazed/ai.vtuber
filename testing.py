@@ -1,4 +1,4 @@
-from libs import pdf, helpers, clustering, pdf
+from libs import pdf, helpers, clustering, pdf, database
 from repositories import chatbot, datasets
 import json
 
@@ -8,3 +8,8 @@ import json
 
 
 datasets.add_datasets_rag("./datasets/jdih", "./datasets/datasets_jdih.json")
+
+
+# db = database.db
+
+# db.insert({"name": "testing2"})

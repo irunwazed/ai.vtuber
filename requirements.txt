@@ -11,3 +11,4 @@ uvicorn
 PyMuPDF
 PyPDF2
 nltk
+tinydb

@@ -1,5 +1,5 @@
 
-from libs import pdf, helpers, clustering
+from libs import pdf, helpers, clustering, database
 import json
 
 import os
@@ -25,25 +25,24 @@ def create_datasets_rag(path_dir, save_as):
 
 
 def add_datasets_rag(path_dir, save_as):
-  # datasets = []
-  id = 1
+  db = database.db
+  query = database.query
   for filename in os.listdir(path_dir):
     file_path = os.path.join(path_dir, filename)
+    name = filename.replace(".pdf", "")
+    check = db.search(query.name == name)
 
-    if os.path.isfile(file_path) and filename.endswith(".pdf"):
-      datasets = helpers.load_json(save_as)
-      if datasets is None:
-        datasets = []
+    idx = 1
+    if os.path.isfile(file_path) and filename.endswith(".pdf") and len(check) == 0:
       text_pdf = pdf.pdf_to_text(file_path)
-      datasets.append({
-        "id": id,
-        "name": filename.replace(".pdf", ""),
+      text_pdf = helpers.clean_double_space(text_pdf)
+      text_pdf = helpers.clean_page_number(text_pdf)
+      db.insert({
+        "name": name,
         "desc": text_pdf.strip()
       })
-      id += 1
-
-      helpers.save_file(save_as, json.dumps(datasets))
-      print(f"Berhasil simpan {save_as} dengan file {id}. {filename}")
+      print(f"Berhasil simpan {save_as} dengan file {idx}. {filename}")
+      idx += 1
 
 def set_label(path_json):
   data = helpers.load_json(path_json)

@@ -9,6 +9,14 @@ def clean_html(raw_html):
   cleantext = re.sub(CLEANR, '', raw_html)
   return cleantext.strip()
 
+def clean_double_space(text):
+  cleaned_text = re.sub(r'\s+', ' ', text)
+  return cleaned_text.strip()
+
+def clean_page_number(text):
+  cleaned_text = re.sub(r'-\s*\d+\s*-', '', text)
+  return cleaned_text.strip()
+
 def find_all(text, search):
   return [m.start() for m in re.finditer(search.lower(), text.lower())]
 
@@ -37,7 +45,7 @@ def save_file(file_path, text):
     result = True
   except Exception as e:
     print("error : ", e)
-    
+
   # print(f"Teks berhasil disimpan ke {file_path}")
   return result
 
