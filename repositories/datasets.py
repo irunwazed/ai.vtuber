@@ -23,6 +23,28 @@ def create_datasets_rag(path_dir, save_as):
 
   helpers.save_file(save_as, json.dumps(datasets))
 
+
+def add_datasets_rag(path_dir, save_as):
+  # datasets = []
+  id = 1
+  for filename in os.listdir(path_dir):
+    file_path = os.path.join(path_dir, filename)
+
+    if os.path.isfile(file_path) and filename.endswith(".pdf"):
+      datasets = helpers.load_json(save_as)
+      if datasets is None:
+        datasets = []
+      text_pdf = pdf.pdf_to_text(file_path)
+      datasets.append({
+        "id": id,
+        "name": filename.replace(".pdf", ""),
+        "desc": text_pdf.strip()
+      })
+      id += 1
+
+      helpers.save_file(save_as, json.dumps(datasets))
+      print(f"Berhasil simpan {save_as} dengan file {id}. {filename}")
+
 def set_label(path_json):
   data = helpers.load_json(path_json)
 
