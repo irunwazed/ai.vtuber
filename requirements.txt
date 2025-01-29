@@ -12,3 +12,6 @@ PyMuPDF
 PyPDF2
 nltk
 tinydb
+bertopic
+tf-keras
+matplotlib

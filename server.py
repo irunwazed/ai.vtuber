@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn # type: ignore
 from libs import helpers
 
+
 from repositories import chatbot
 
 
@@ -40,13 +41,14 @@ async def read_root(request: Request):
 @app.get("/chat", response_class=HTMLResponse)
 async def chat_message(chat:str):
     message = chatbot.chat_bkn(chat)
+    # message = chatbot.chat_rag(chat)
     result =  {"message": message}
     return JSONResponse(content=result)
 
 @app.get("/chat-data", response_class=HTMLResponse)
 async def chat_message(chat:str):
-    data = helpers.load_file("data.txt")
-    message = chatbot.chat_with_context(data, chat)
+    # data = helpers.load_file("data.txt")
+    message = chatbot.chat_rag(chat)
     result =  {"message": message}
     return JSONResponse(content=result)
 

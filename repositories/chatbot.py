@@ -1,4 +1,5 @@
 from libs import class_jenis, ner, llm, helpers
+from repositories.datasets import search_documents
 
 def chat_bkn(question):
   jenis = class_jenis.check_class_once(question)
@@ -49,6 +50,25 @@ def chat_with_context(context, question):
   prompt = f"""
     Gunakan informasi berikut untuk menjawab pertanyaan secara langsung, jelas dan sangat singkat:
     {context}
+
+    Pertanyaan:
+    {question}
+
+    Jawaban:"""
+  
+  result = "Maaf saya tidak mengerti"
+  try:
+    result = llm.ollama_chat(prompt)
+  except Exception as e:
+    print("ERROR : ", e)
+  return result
+
+def chat_rag(question):
+  context = search_documents(question)
+  print("context", context[0]["name"])
+  prompt = f"""
+    Gunakan informasi berikut untuk menjawab pertanyaan secara langsung, jelas dan sangat singkat:
+    {context[0]["desc"]}
 
     Pertanyaan:
     {question}
