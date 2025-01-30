@@ -69,24 +69,53 @@ def chat_with_context(context, question):
     print("ERROR : ", e)
   return result
 
+# def chat_rag(question):
+#   context = search_documents(question)
+#   print("context", context[0]["name"])
+#   prompt = f"""
+#     Gunakan informasi berikut untuk menjawab pertanyaan secara langsung, jelas dan singkat:
+#     judul dokumen:
+#       {context[0]["name"]}
+#     Isi:
+#       {context[0]["context"]}
+
+#     Pertanyaan:
+#     {question}
+
+#     Jawaban:"""
+  
+#   result = "Maaf saya tidak mengerti"
+#   try:
+#     result = llm.ollama_chat(prompt)
+#   except Exception as e:
+#     print("ERROR : ", e)
+#   return result
+
 def chat_rag(question):
-  context = search_documents(question)
-  print("context", context[0]["name"])
-  prompt = f"""
-    Gunakan informasi berikut untuk menjawab pertanyaan secara langsung, jelas dan singkat:
-    judul dokumen:
-      {context[0]["name"]}
-    Isi:
-      {context[0]["context"]}
+    context = search_documents(question)
+    print("Context retrieved from document:", context[0]["name"])
+    
+    prompt = f"""
+    Anda adalah model bahasa yang terlatih untuk menjawab pertanyaan dengan memanfaatkan konteks dari dokumen yang relevan.
+    Gunakan informasi berikut untuk memberikan jawaban yang langsung, jelas, dan singkat.
+
+    Judul Dokumen: 
+    {context[0]["name"]}
+
+    Isi Dokumen:
+    {context[0]["context"]}
 
     Pertanyaan:
     {question}
 
-    Jawaban:"""
-  
-  result = "Maaf saya tidak mengerti"
-  try:
-    result = llm.ollama_chat(prompt)
-  except Exception as e:
-    print("ERROR : ", e)
-  return result
+    Berdasarkan informasi yang diberikan dalam dokumen di atas, jawab pertanyaan ini dengan tepat. Jika jawabannya tidak ada dalam konteks, berikan respon yang jelas menjelaskan ketidaktahuan Anda.
+    
+    Jawaban:
+    """
+    
+    result = "Maaf, saya tidak mengerti."
+    try:
+        result = llm.ollama_chat(prompt)
+    except Exception as e:
+        print("ERROR:", e)
+    return result
