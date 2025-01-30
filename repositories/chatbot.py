@@ -5,13 +5,18 @@ def chat_bkn(question):
   jenis = class_jenis.check_class_once(question)
   entities = ner.search_entities_json(question)
 
+  print("jenis", jenis)
+
   result = "Maaf saya tidak mengerti"
   try:
-    if len(entities) > 0:
+    if jenis == "greeting":
+      result = llm.ollama_chat(f"Buat kalimat salam secara singkat dengan jabatan salam ini: {question}")
+    elif len(entities) > 0:
       # if jenis == "request_what":
       #   result = llm.ollama_chat("Jelaskan secara singkat mengenai ini : "+entities[0]["desc"])
       if jenis == "request_who":
         result = llm.ollama_chat("Jelaskan secara singkat Siapa itu : "+entities[0]["text"]+" dengan deskripsi singkat "+ entities[0]["desc"])
+     
     # else:
     if result == "Maaf saya tidak mengerti":
       result = chat_rag(question) # llm.ollama_chat("Jawab secara singkat pertanyaan ini : "+question)
@@ -68,7 +73,7 @@ def chat_rag(question):
   context = search_documents(question)
   print("context", context[0]["name"])
   prompt = f"""
-    Gunakan informasi berikut untuk menjawab pertanyaan secara langsung, jelas dan sangat singkat:
+    Gunakan informasi berikut untuk menjawab pertanyaan secara langsung, jelas dan singkat:
     judul dokumen:
       {context[0]["name"]}
     Isi:

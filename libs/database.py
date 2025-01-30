@@ -61,8 +61,6 @@ def get_by_name(name):
           'name': row[1],
           'context': row[2],
       }
-  else:
-    print(f"No records found for name: {name}")
 
   return result
   

@@ -20,6 +20,8 @@
   {"text": "Apa yang dimaksud dengan pemrograman?", "label": "request_what"},
   {"text": "Apa yang terjadi jika kita menekan tombol ini?", "label": "request_what"},
   {"text": "Apa itu machine learning?", "label": "request_what"},
+  {"text": "Jelaskan tentang machine learning?", "label": "request_what"},
+  {"text": "machine learning adalah", "label": "request_what"},
   
   {"text": "Apa perbandingan antara dua produk ini?", "label": "request_what_comparison"},
   {"text": "Apa perbedaan antara bahasa Python dan Java?", "label": "request_what_comparison"},

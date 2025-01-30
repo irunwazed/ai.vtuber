@@ -35,18 +35,13 @@ def add_datasets_rag(path_dir):
   for filename in os.listdir(path_dir):
     file_path = os.path.join(path_dir, filename)
     name = filename.replace(".pdf", "")
-    # check = tableAturan.search(query.name == name)
     check = database.get_by_name(name)
 
     if os.path.isfile(file_path) and filename.endswith(".pdf") and not check:
       text_pdf = pdf.pdf_to_text(file_path)
       text_pdf = helpers.clean_double_space(text_pdf)
       text_pdf = helpers.clean_page_number(text_pdf)
-      database.insert_document(name, text_pdf.strip())
-      # tableAturan.insert({
-      #   "name": name,
-      #   "desc": text_pdf.strip()
-      # })
+      database.insert_document(name, f"nama dokumen: {name} \n isi dokumen: {text_pdf.strip()}")
       print(f"{idx}. Berhasil simpan dengan file  {filename}")
     else:
       print(f"{idx}. sudah ada {name}")
@@ -97,6 +92,7 @@ def set_label(path_json):
 def search_documents(query, top_k=3):
   all_docs = database.fetch_all_documents()
   docs_text = [doc[2] for doc in all_docs]
+  docs_judul_text = [doc[1] for doc in all_docs]
 
   nltk.download('stopwords')
   stop_words_indonesian = stopwords.words('indonesian')
@@ -104,9 +100,22 @@ def search_documents(query, top_k=3):
   # Gunakan TF-IDF untuk mengubah dokumen dan query menjadi vektor
   vectorizer = TfidfVectorizer(stop_words=stop_words_indonesian)
   tfidf_matrix = vectorizer.fit_transform(docs_text + [query])
+  tfidf_matrix_judul = vectorizer.fit_transform(docs_judul_text + [query])
   
   # Hitung kesamaan kosinus antara query dan dokumen
-  cosine_similarities = cosine_similarity(tfidf_matrix[-1], tfidf_matrix[:-1])
+  cosine_similarities = cosine_similarity(tfidf_matrix_judul[-1], tfidf_matrix_judul[:-1])
+  isJudul = False
+  for i in cosine_similarities:
+    for j in i:
+      if float(j) > 0.4:
+        isJudul = True
+
+  if not isJudul:
+    print("not judul")
+    cosine_similarities = cosine_similarity(tfidf_matrix[-1], tfidf_matrix[:-1])
+  else:
+    print("judul")
+
   
   # Ambil dokumen dengan kesamaan tertinggi
   similar_indices = cosine_similarities.argsort()[0][-top_k:][::-1]
