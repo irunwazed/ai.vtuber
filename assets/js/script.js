@@ -174,8 +174,9 @@ function load(url) {
   );
 }
 
-load("./assets/vrm/simple.vrm");
+// load("./assets/vrm/simple.vrm");
 // load( './assets/vrm/hellP2.vrm' );
+load("./assets/vrm/robot.vrm");
 
 // grid / axis helpers
 //			const gridHelper = new THREE.GridHelper( 10, 10 );

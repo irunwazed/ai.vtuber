@@ -40,8 +40,8 @@ async def read_root(request: Request):
 
 @app.get("/chat", response_class=HTMLResponse)
 async def chat_message(chat:str):
-    message = chatbot.chat_bkn(chat)
-    # message = chatbot.chat_rag(chat)
+    # message = chatbot.chat_bkn(chat)
+    message = chatbot.chat_rag(chat)
     result =  {"message": message}
     return JSONResponse(content=result)
 

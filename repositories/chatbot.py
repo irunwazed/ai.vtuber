@@ -8,12 +8,13 @@ def chat_bkn(question):
   result = "Maaf saya tidak mengerti"
   try:
     if len(entities) > 0:
-      if jenis == "request_what":
-        result = llm.ollama_chat("Jelaskan secara singkat mengenai ini : "+entities[0]["desc"])
-      elif jenis == "request_who":
+      # if jenis == "request_what":
+      #   result = llm.ollama_chat("Jelaskan secara singkat mengenai ini : "+entities[0]["desc"])
+      if jenis == "request_who":
         result = llm.ollama_chat("Jelaskan secara singkat Siapa itu : "+entities[0]["text"]+" dengan deskripsi singkat "+ entities[0]["desc"])
-    else:
-      result = llm.ollama_chat("Jawab secara singkat pertanyaan ini : "+question)
+    # else:
+    if result == "Maaf saya tidak mengerti":
+      result = chat_rag(question) # llm.ollama_chat("Jawab secara singkat pertanyaan ini : "+question)
   except Exception as e:
     print("ERROR : ", e)
   return result
@@ -68,7 +69,10 @@ def chat_rag(question):
   print("context", context[0]["name"])
   prompt = f"""
     Gunakan informasi berikut untuk menjawab pertanyaan secara langsung, jelas dan sangat singkat:
-    {context[0]["desc"]}
+    judul dokumen:
+      {context[0]["name"]}
+    Isi:
+      {context[0]["context"]}
 
     Pertanyaan:
     {question}
