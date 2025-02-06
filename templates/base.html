@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    {% block head %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      body {
+        @apply bg-slate-100/60;
+      }
+      table th {
+        @apply py-2 px-4 text-center;
+      }
+
+      #footer {
+        @apply fixed bottom-0 w-full text-center bg-slate-700 text-slate-100 py-1;
+      }
+
+      nav {
+        @apply w-full bg-slate-700 text-slate-100 flex justify-center;
+      }
+
+      nav ul {
+        @apply flex gap-2 py-1 px-4;
+      }
+
+      nav li {
+        @apply py-2 px-4 hover:bg-slate-600 rounded-lg;
+      }
+
+      table {
+        @apply w-full;
+      }
+
+      thead tr {
+        @apply bg-slate-500 text-slate-100
+      }
+
+      table th {
+        @apply py-2 px-4 text-center;
+      }
+
+      tbody {
+        @apply text-[13px]
+      }
+
+      tbody tr:nth-child(even) {
+        @apply hover:bg-slate-300
+      }
+
+      tbody tr:nth-child(odd) {
+        @apply bg-slate-200 hover:bg-slate-300
+      }
+
+
+      .pagination {
+        @apply w-full flex mt-2 justify-end;
+      }
+
+      .pagination ul {
+        @apply flex gap-[1px];
+      }
+
+      .pagination li {
+        @apply p-2 bg-slate-100 hover:bg-slate-200/80 rounded-lg;
+      }
+
+      dialog {
+        @apply hidden fixed w-full h-screen top-0 z-10 justify-center items-center bg-black/50;
+      }
+      dialog.active {
+        @apply flex;
+      }
+
+      .btn {
+        @apply py-2 px-4 rounded-md bg-slate-600 text-slate-100 hover:bg-slate-700 cursor-pointer
+      }
+
+      .btn-info {
+        @apply py-2 px-4 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer
+      }
+
+      .form-control {
+    @apply flex flex-col my-2
+   }
+   .form-control label {
+    @apply text-base
+   }
+
+   .form-control input {
+    @apply ring-1 ring-slate-500 rounded-sm p-2
+    }
+    .form-control select {
+    @apply ring-1 ring-slate-500 rounded-sm p-2
+    }
+
+    .form-control textarea {
+    @apply ring-1 ring-slate-500 rounded-sm p-2
+    }
+
+    </style>
+    <title>{% block title %}{% endblock %} - My Webpage</title>
+    {% endblock %}
+  </head>
+  <body>
+
+    
+    <div id="loading-all" class="fixed top-0 w-full h-screen z-100 bg-slate-700/70 flex justify-center items-center flex-col text-white text-3xl font-bold">
+      LOADING
+      <div class="flex">
+        <iframe id="game1" src="/assets/html/game.html" class="hidden h-[340px]" frameborder="0"></iframe>
+        <iframe id="game2" src="/assets/html/game2.html" class="hidden h-[450px] w-[800px]" frameborder="0"></iframe>
+        <iframe id="game3" src="/assets/html/game3.html" class="hidden h-[660px] w-[360px]" frameborder="0"></iframe>
+        <iframe id="game4" src="/assets/html/game4.html" class="hidden h-[600px] w-[400px]" frameborder="0"></iframe>
+      </div>
+    </div>
+    <nav>
+      <ul>
+        <li>
+          <a href="/admin">Beranda</a>
+        </li>
+        <li>
+          <a href="/admin/documents">Dokumen</a>
+        </li>
+        <li>
+          <a href="/admin/datasets">Dataset</a>
+        </li>
+      </ul>
+    </nav>
+    <div id="content">{% block content %}{% endblock %}</div>
+    <div id="footer">
+      {% block footer %} &copy; Copyright 2025 by
+      <a href="https://www.bkn.go.id/">BKN Team</a>. {% endblock %}
+    </div>
+
+    <script>
+      const loadingAllElement = document.getElementById("loading-all")
+          const get =  async (url) => {
+            const respon = await fetch(url).then(async (res) => {
+              const data = await res.json()
+              return {
+                status: true,
+                data: data
+              }
+            }).catch(err => {
+              return {
+                status: false,
+                data: null,
+                errors: err
+              }
+            })
+            return respon
+            // console.log("respon", respon)
+          }
+
+          const postUpload = async (url, formData) => {
+            const respon = await fetch(url, {
+              method: 'POST',
+              body: formData, // Kirimkan form data berisi file
+            }).then(async (res) => {
+              const data = await res.json()
+              return {
+                status: true,
+                data: data
+              }
+            }).catch(err => {
+              return {
+                status: false,
+                data: null,
+                errors: err
+              }
+            })
+            return respon
+          }
+
+          const post = async (url, data) => {
+            const respon = await fetch(url, {
+              method: 'POST',
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(data), // Kirimkan form data berisi file
+            }).then(async (res) => {
+              const data = await res.json()
+              return {
+                status: true,
+                data: data
+              }
+            }).catch(err => {
+              return {
+                status: false,
+                data: null,
+                errors: err
+              }
+            })
+            return respon
+          }
+
+
+          async function prompt(prompt, clear = false){
+            // loading(true)
+            const respon = await post("/admin/prompt", {
+              prompt: prompt,
+              clear: clear
+            })
+            // loading(false)
+            return respon
+          }
+
+          const loading = (status = true) => {
+
+            let game = []
+
+            game[0] = document.getElementById("game1")
+            game[1] = document.getElementById("game2")
+            game[2] = document.getElementById("game3")
+            game[3] = document.getElementById("game4")
+
+            let randomInt = Math.floor(Math.random() * 4);
+
+            for(let i = 0; i < game.length; i++){
+              if(i == randomInt){
+                game[i].classList.remove("hidden")
+              }else{
+                game[i].classList.add("hidden")
+              }
+
+            }
+
+
+
+
+            
+            if(status){
+              loadingAllElement.classList.add("fixed")
+              loadingAllElement.classList.remove("hidden")
+            }else {
+              loadingAllElement.classList.remove("fixed")
+              loadingAllElement.classList.add("hidden")
+            }
+          }
+          loading(false)
+    </script>
+
+    {% block script %} {% endblock %}
+  </body>
+</html>

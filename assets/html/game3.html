@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Tebak Warna</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .game-container {
+            margin-top: 50px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            margin: 50px auto;
+        }
+        h1 {
+            color: #333;
+        }
+        #color-display {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            border: 5px solid #ccc;
+            border-radius: 10px;
+            background-color: #000;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #score {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        #result {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <h1>Game Tebak Warna</h1>
+    <p id="score">Skor: 0</p>
+    <div id="color-display"></div>
+    <p>Pilih warna yang benar:</p>
+    <button class="color-btn" style="background-color: red;">Merah</button>
+    <button class="color-btn" style="background-color: green;">Hijau</button>
+    <button class="color-btn" style="background-color: blue;">Biru</button>
+    <button class="color-btn" style="background-color: yellow;">Kuning</button>
+    <button id="start-btn">Mulai Game</button>
+    <p id="result"></p>
+</div>
+
+<script>
+    let score = 0;
+    let targetColor;
+    let gameInterval;
+
+    const scoreElement = document.getElementById('score');
+    const colorDisplay = document.getElementById('color-display');
+    const resultElement = document.getElementById('result');
+    const startBtn = document.getElementById('start-btn');
+    const colorBtns = document.querySelectorAll('.color-btn');
+
+    const colors = ['red', 'green', 'blue', 'yellow'];
+
+    // Fungsi untuk memulai game
+    function startGame() {
+        score = 0;
+        scoreElement.textContent = `Skor: ${score}`;
+        resultElement.textContent = '';
+        startBtn.disabled = true;
+        showRandomColor();
+    }
+
+    // Fungsi untuk menampilkan warna acak di kotak
+    function showRandomColor() {
+        targetColor = colors[Math.floor(Math.random() * colors.length)];
+        colorDisplay.style.backgroundColor = targetColor;
+        setTimeout(() => {
+            // Mengacak warna lain setelah beberapa detik
+            showRandomColor();
+        }, 1000);
+    }
+
+    // Fungsi untuk memeriksa apakah warna yang dipilih benar
+    function checkColor(selectedColor) {
+        if (selectedColor === targetColor) {
+            score++;
+            scoreElement.textContent = `Skor: ${score}`;
+            resultElement.textContent = 'Benar!';
+        } else {
+            resultElement.textContent = 'Salah!';
+        }
+    }
+
+    // Event listener untuk tombol pilihan warna
+    colorBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const selectedColor = btn.style.backgroundColor;
+            checkColor(selectedColor);
+        });
+    });
+
+    // Event listener untuk memulai game
+    startBtn.addEventListener('click', startGame);
+</script>
+
+</body>
+</html>

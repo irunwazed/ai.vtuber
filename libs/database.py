@@ -16,6 +16,7 @@ import sqlite3
 
 # Membuat koneksi ke database (akan dibuat jika belum ada)
 conn = sqlite3.connect('ai.db')
+connDocu = sqlite3.connect('document.db')
 
 
 def create_table():
@@ -25,8 +26,26 @@ def create_table():
       id INTEGER PRIMARY KEY,
       name TEXT NOT NULL,
       context TEXT,
+      url TEXT,
+      type INTEGER,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )
+  ''')
+
+  # type 1. File Peraturan, 2. link 
+
+    
+  cursor.execute('''
+  CREATE TABLE IF NOT EXISTS datasets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    question TEXT NOT NULL,
+    answer TEXT NOT NULL,
+    source TEXT NOT NULL,
+    status INTEGER DEFAULT 0,
+    document_id INTEGER,
+    created_by TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
   ''')
   conn.commit()
 

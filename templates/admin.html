@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Index{% endblock %}
+{% block head %}
+    {{ super() }}
+    <style type="text/css">
+        .important { color: #336699; }
+    </style>
+{% endblock %}
+{% block content %}
+    <h1>Selamat datang</h1>
+    <div>
+        <div class="flex">
+            <label for="">Dokumen</label>
+            <div id="document-jumlah"></div>
+        </div>
+        <div class="flex">
+            <label for="">Dataset</label>
+            <div id="dataset-jumlah"></div>
+        </div>
+        
+    </div>
+{% endblock %}
+
+
+  
+{% block script %}
+
+<script>
+
+    const documentJumlah = document.getElementById("document-jumlah")
+    const datasetJumlah = document.getElementById("dataset-jumlah")
+    async function getMonitor(){
+        const respon = await get("/admin/monitoring")
+        console.log("respon", respon)
+        documentJumlah.innerHTML = " : "+respon.data.documents
+        datasetJumlah.innerHTML = " : "+respon.data.datasets
+    }
+    getMonitor()
+</script>
+
+{% endblock %}

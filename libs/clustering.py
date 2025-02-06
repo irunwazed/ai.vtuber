@@ -110,7 +110,3 @@ def get_labels(dokumen, max_label):
 
   return final_clusters
 
-  # # Langkah 5: Output hasil clustering
-  # for i, cluster in enumerate(final_clusters):
-  #   print(f"Dokumen {i+1} berada di Cluster {cluster}")
-

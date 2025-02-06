@@ -1,0 +1,438 @@
+{% extends "base.html" %} {% block title %}Datasets{% endblock %} {% block head
+  %} {{ super() }}
+  <style type="text/tailwindcss">
+ 
+  </style>
+  {% endblock %} {% block content %}
+  
+  <dialog id="dialog" >
+    <div onclick="closeDialog()" class="absolute w-full h-full z-0 ">
+    </div>
+    <div class="w-[90%] bg-white shadow-lg shadow-slate-100/30 rounded-lg p-4 z-10">
+      <form action="">
+        <div class="form-control">
+          <label for="">File :</label>
+          <input onchange="read_file()" type="file" id="file-input" name="file" accept="application/pdf">
+        </div>
+        <hr>
+        <input type="text" name="id" class="hidden">
+        <div class="form-control">
+          <label for="">Type :</label>
+          <select name="type">
+            <option value="">-= Pilih Type =-</option>
+            <option value="1">PDF</option>
+            <option value="2">Link</option>
+          </select>
+        </div>
+        <div class="form-control">
+          <label for="">Nama :</label>
+          <input type="text" name="name">
+        </div>
+        <div class="form-control">
+          <label for="">Isi :</label>
+          <textarea name="context" class="max-h-[95%] min-h-[50px] h-[300px]"></textarea>
+        </div>
+
+        <div class="form-control">
+          <label for="">URL :</label>
+          <input type="text" name="url">
+        </div>
+
+        <button class="btn" type="button" onclick="store()">Simpan</button>
+      </form>
+    </div>
+  </dialog>
+
+  <dialog id="dialog-delete">
+    <div onclick="closeDialogDelete()" class="absolute w-full h-full z-0 ">
+    </div>
+
+    <div class="w-[500px] bg-white shadow-lg shadow-slate-100/30 rounded-lg p-4 z-10">
+      <h3>Apakah Anda yakin hapus "<span id="delete-name" class="font-bold text-red-500"></span>"?</h3>
+      <div class="mt-4 flex justify-between">
+
+      <button onclick="deleteDoc()" class="btn">Ya</button>
+      <button onclick="closeDialogDelete()" class="btn-info ">Batal</button>
+      </div>
+    </div>
+    
+  </dialog>
+
+  <dialog id="dialog-question">
+    <div onclick="closeDialogQuestion()" class="absolute w-full h-full z-0 ">
+    </div>
+
+    <div class="w-full h-screen  bg-white shadow-lg shadow-slate-100/30 rounded-lg p-4 z-10">
+      <div class="max-h-[90%] overflow-y-scroll px-4">
+        <form action="" >
+
+          <input type="text" name="prompt-id" class="hidden">
+          <div class="form-control">
+            <label for="">Nama :</label>
+            <input type="text" name="prompt-name">
+          </div>
+          <div class="form-control">
+            <label for="">Isi :</label>
+            <textarea name="prompt-context" class="max-h-[95%] min-h-[50px] h-[300px]"></textarea>
+          </div>
+          <div class="form-control">
+            <label for="">Template :</label>
+            <textarea name="prompt-template" class="max-h-[95%] min-h-[50px] h-[300px] bg-slate-100/60"></textarea>
+          </div>
+          <div class="form-control">
+            <label for="">Result Pertanyaan :</label>
+            <textarea name="prompt-result" class="max-h-[95%] min-h-[50px] h-[300px] bg-yellow-100/90"></textarea>
+          </div>
+          <div class="form-control">
+            <label for="">Template Answer :</label>
+            <textarea name="prompt-template-answer" class="max-h-[95%] min-h-[50px] h-[300px] bg-slate-100/50"></textarea>
+          </div>
+          <div class="form-control">
+            <label for="">Result Jawaban :</label>
+            <textarea onchange="" name="prompt-result-answer" class="max-h-[95%] min-h-[50px] h-[300px] bg-green-100/90"></textarea>
+            <button onclick="handleResult()" type="button"  class="btn">show</button>
+          </div>
+          <div id="result-all" class="flex flex-col gap-4 w-full">
+
+          </div>
+        </form>
+      </div>
+      
+      <div class="mt-4 flex justify-between">
+        <div>
+
+          <button onclick="generateQuestion()" class="btn">Generate Pertanyaan</button>
+          <button onclick="generateAnswer()" class="btn">Generate Jawaban</button>
+          <button onclick="save_datasets()" class="btn">Generate Simpan</button>
+        </div>
+        <button onclick="closeDialogQuestion()" class="btn-info ">Batal</button>
+      </div>
+    </div>
+
+  </dialog>
+  <div class="p-4">
+
+    <button class="btn" onclick="openDialog()">Tambah</button>
+
+    <table>
+      <thead>
+        <tr>
+          <th class="w-[10px]">No</th>
+          <th class="py-2 px-4 text-center">Dokumen</th>
+          <th class="py-2 px-4 text-center">Isi (Karakter)</th>
+          <th class="py-2 px-4 text-center">Dataset</th>
+          <th class="py-2 px-4 text-center">Dibuat</th>
+          <th class="py-2 px-4 text-center">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for doc in documents %} {% set outer_loop = loop %} {% set id = doc["id"] %} {% set name = doc["name"] %} {% set context = doc["context"] %} {% set type = doc["type"] %}
+        <tr>
+          <td class="text-center">{{ ((pagination["page"]-1)*pagination["per_page"])+outer_loop.index }}</td>
+          <td>{{name}}</td>
+          <td class="text-center">{{(context|length)}}</td>
+          <td class="text-center">{{doc["jumlah_dataset"]}}</td>
+          <td class="text-center">{{doc["created_at"]}}</td>
+          <td class="flex gap-2 py-2">
+            <a target="_blank" href="{{ '/download/' + doc['url'] if doc['type'] == 1 else doc['url'] }}" class="text-yellow-100 p-2 bg-yellow-600 rounded-lg hover:bg-yellow-700 cursor-pointer" >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+            </a>
+            <div onclick="openDialogQuestion('{{id}}', `{{name}}`, `{{context}}`)"  class="text-green-100 p-2 bg-green-600 rounded-lg hover:bg-green-700 cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-question"><path d="M12 17h.01"/><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3"/></svg>
+            </div>
+            <div onclick="openDialog('{{id}}', `{{name}}`, `{{context}}`, `{{doc['url']}}`, `{{type}}`)" class="text-blue-100 p-2 bg-blue-600 rounded-lg hover:bg-blue-700 cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
+            </div>
+            <div onclick="openDialogDelete('{{id}}', `{{name}}`)" class="text-red-100 p-2 bg-red-600 rounded-lg hover:bg-red-700 cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  
+    <div class="pagination">
+      <ul>
+        <li><a href="?page={{pagination["page"]-1}}&per_page=10">Sebelumnya</a></li>
+        <li>{{pagination["page"]}}</li>
+        <li><a href="?page={{pagination["page"]+1}}&per_page=10">Selanjutnya</a></li>
+      </ul>
+    </div>
+  </div>
+  {% endblock %}
+  
+  {% block script %}
+
+  <script>
+
+    const templates = [
+    `Berdasarkan dokumen berikut, buatkan 10 pertanyaan yang membutuhkan penjelasan mendalam dan kompleks. 
+Pertanyaan tersebut harus mencakup berbagai aspek dari informasi yang ada dalam dokumen. Pertanyaan bisa bersifat analitis, interpretatif, atau menjelaskan hubungan antar bagian dari dokumen. Harap pastikan bahwa pertanyaan tersebut tidak hanya berfokus pada fakta, tetapi juga mengajak untuk berpikir lebih jauh dan menyeluruh.
+
+Dokumen:
+{context}
+
+Berikan jawaban dengan format Array dibawah ini:
+[
+    {"question": "pertanyaan pertama"},
+    {"question": "pertanyaan kedua"},
+    {"question": "pertanyaan ketiga"},
+    ...
+]
+    `,
+    `Anda adalah model bahasa yang terlatih untuk menjawab pertanyaan dengan memanfaatkan konteks dari dokumen yang relevan.
+Gunakan informasi berikut untuk memberikan jawaban yang langsung, jelas, dan singkat. 
+
+Isi dokumen:
+{context}
+
+Pertanyaan:
+{question}
+
+Berdasarkan informasi yang diberikan dalam dokumen di atas, jawab pertanyaan ini dengan jelas dan tepat. Jika jawabannya tidak ada dalam konteks, berikan text kosong.
+Berikan langsung jawaban tanpa mengulang pertanyaan kembali
+    
+Jawaban:`
+    ]
+
+    const fileInput = document.getElementById('file-input');  
+    const dialog = document.getElementById("dialog")
+    const dialogDelete = document.getElementById("dialog-delete")
+    const dialogQuestion = document.getElementById("dialog-question")
+    const deleteNameElement = document.getElementById("delete-name")
+
+    const nameElement = document.querySelector('input[name="name"]');
+    const contextElement = document.querySelector('textarea[name="context"]');
+    const idElement = document.querySelector('input[name="id"]');
+    const urlElement = document.querySelector('input[name="url"]');
+    const typeElement = document.querySelector('select[name="type"]');
+
+
+    const promptNameElement = document.querySelector('input[name="prompt-name"]');
+    const promptContextElement = document.querySelector('textarea[name="prompt-context"]');
+    const promptIdElement = document.querySelector('input[name="prompt-id"]');
+    const promptTemplateElement = document.querySelector('textarea[name="prompt-template"]');
+    const promptResultElement = document.querySelector('textarea[name="prompt-result"]');
+    const promptTemplateAnswerElement = document.querySelector('textarea[name="prompt-template-answer"]');
+    const promptResultAnswerElement = document.querySelector('textarea[name="prompt-result-answer"]');
+
+    const resultAllElement = document.getElementById("result-all")
+
+    
+
+    let deletedId = 0;
+    let deletedName = "";
+    let action = ""
+
+    function openDialog(id = null, name = null, context = null, url = null, type = null){
+      if(id && name && context){
+        action = "edit"
+        nameElement.value = name
+        contextElement.value = context
+        idElement.value = id
+        urlElement.value = url
+        typeElement.value = type
+      }else {
+        action = "add"
+      }
+      dialog.classList.add("active")
+    }
+
+    function closeDialog(){
+      dialog.classList.remove("active")
+    }
+
+    function openDialogDelete(id, name){
+      deletedId = id
+      deletedName = name
+      deleteNameElement.innerHTML = deletedName
+      dialogDelete.classList.add("active")
+    }
+
+    function closeDialogDelete(){
+      dialogDelete.classList.remove("active")
+    }
+
+    function openDialogQuestion(id, name, context){
+      promptNameElement.value = name
+      promptContextElement.value = context
+      promptIdElement.value = id
+      promptTemplateElement.value = templates[0]
+      promptTemplateAnswerElement.value = templates[1]
+      dialogQuestion.classList.add("active")
+    }
+    function closeDialogQuestion(){
+      dialogQuestion.classList.remove("active")
+    }
+
+    async function read_file(){
+      const formData = new FormData();
+      const file = fileInput.files[0];
+      if (file){
+        formData.append('file', file);
+      }
+
+      loading(true)
+      const respon = await postUpload("/doc-to-text", formData)
+      console.log("respon", respon)
+
+      loading(false)
+
+      if(respon.status){
+        nameElement.value = respon.data.name.replace(".pdf", "")
+        contextElement.value = respon.data.desc
+        urlElement.value = respon.data.filename
+        typeElement.value = "1"
+      }
+
+    }
+
+    async function store() {
+      if(action == "add"){
+        save()
+      }else{
+        update()
+      }
+    }
+
+    async function save(){
+      loading(true)
+      const respon = await post("/admin/document/save", {
+        name: nameElement.value,
+        context: contextElement.value,
+        url: urlElement.value,
+        type: typeElement.value
+      })
+
+      if(!respon.status) alert("Gagal masuk")
+      window.location.reload()
+
+      loading(false)
+    }
+
+    async function update(){
+      loading(true)
+
+      const respon = await post("/admin/document/update", {
+        id: idElement.value,
+        name: nameElement.value,
+        context: contextElement.value,
+        url: urlElement.value,
+        type: typeElement.value
+      })
+      if(!respon.status) alert("Gagal masuk")
+      window.location.reload()
+
+      loading(false)
+    }
+
+    async function deleteDoc() {
+      loading(true)
+      const respon = await get("/admin/document/delete/"+deletedId)
+      console.log("respon", respon)
+      if(!respon.status) alert("Gagal masuk")
+      window.location.reload()
+
+      loading(false)
+    }
+
+
+
+    async function text_to_array(text){
+      const respon = await post("/text-to-array", {
+        text: text,
+      })
+      return respon.data.array
+    }
+
+    
+
+
+    async function generateQuestion() {
+      loading(true)
+      const template = promptTemplateElement.value
+      const document = promptContextElement.value
+
+      const data = template.replace("{context}", document)
+      const respon = await prompt(data)
+      promptResultElement.value = respon.data.respon
+      loading(false)
+    }
+
+    async function generateAnswer() {
+      loading(true)
+      const template = promptTemplateAnswerElement.value
+      const document = promptContextElement.value
+      const questionsText = promptResultElement.value
+      const questions = await text_to_array(questionsText)
+
+      console.log("questions", questions)
+
+      if(questions.length == 0){
+        alert("Gagal mengambil jawaban dari text")
+        return
+      }
+
+      let result = []
+      for(let i = 0; i < questions.length; i++){
+        const question = questions[i].question
+        const data = template.replace("{context}", document).replace("{question}", question)
+        const respon = await prompt(data, true)
+        const answer = respon.data.respon
+        result.push({
+          question: question,
+          answer: answer
+        })
+      }
+      promptResultAnswerElement.value = JSON.stringify(result)
+      handleResult()
+      loading(false)
+    }
+
+    function handleResult() {
+      let resultArr = ""
+      resultAllElement.innerHTML = "Loading..."
+      try{
+        const result = JSON.parse(promptResultAnswerElement.value)
+        for(let i = 0; i < result.length; i++){
+          resultArr += `
+          <div class="flex flex-col gap-1 bg-slate-100 p-2 rounded-sm">
+            <div class="text-yellow-800">${result[i].question}</div>
+            <div class="text-green-800">${result[i].answer}</div>
+          </div>
+          `
+        }
+
+      }catch(err){
+        resultArr = "ERROR FORMAT JSON : "+err
+        console.log("ERROR HANDLE RESULT :", err)
+      }
+
+      resultAllElement.innerHTML = resultArr
+    }
+
+
+    async function save_datasets(){
+      loading(true)
+
+      try{
+        const result = JSON.parse(promptResultAnswerElement.value)
+        const respon = await post("/admin/document/datasets/save", {
+          data: result,
+          document_id: promptIdElement.value
+        })
+        if(respon.status) alert("Berhasil masuk")
+        else alert("Gagal masuk")
+        window.location.reload()
+      }catch(err){
+        alert("ERROR : "+err.message)
+      }
+
+
+      loading(false)
+    }
+
+    ///
+  </script>
+  {% endblock %}

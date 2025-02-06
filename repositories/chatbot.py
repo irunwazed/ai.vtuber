@@ -109,7 +109,8 @@ def chat_rag(question):
     {question}
 
     Berdasarkan informasi yang diberikan dalam dokumen di atas, jawab pertanyaan ini dengan tepat. Jika jawabannya tidak ada dalam konteks, berikan respon yang jelas menjelaskan ketidaktahuan Anda.
-    
+    Berikan langsung jawaban tanpa mengulang pertanyaan kembali
+
     Jawaban:
     """
     

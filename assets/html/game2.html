@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Klik Kotak</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f3f4f6;
+        }
+        .game-container {
+            text-align: center;
+            border: 3px solid #333;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: white;
+        }
+        #score {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .square {
+            width: 100px;
+            height: 100px;
+            background-color: #3498db;
+            margin: 10px;
+            display: inline-block;
+            border-radius: 10px;
+            cursor: pointer;
+            visibility: hidden;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #2ecc71;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        button:hover {
+            background-color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <h1>Game Klik Kotak</h1>
+    <p id="score">Skor: 0</p>
+    <div id="squares-container"></div>
+    <button id="start-btn">Mulai Game</button>
+</div>
+
+<script>
+    let score = 0;
+    let gameInterval;
+    const totalSquares = 9; // Jumlah kotak
+    const gameDuration = 15; // Durasi game dalam detik
+
+    const scoreElement = document.getElementById('score');
+    const startBtn = document.getElementById('start-btn');
+    const squaresContainer = document.getElementById('squares-container');
+
+    // Membuat kotak-kotak
+    for (let i = 0; i < totalSquares; i++) {
+        const square = document.createElement('div');
+        square.classList.add('square');
+        square.dataset.id = i;
+        square.addEventListener('click', () => increaseScore(i));
+        squaresContainer.appendChild(square);
+    }
+
+    function showRandomSquare() {
+        const squares = document.querySelectorAll('.square');
+        const randomIndex = Math.floor(Math.random() * totalSquares);
+        const randomSquare = squares[randomIndex];
+        randomSquare.style.visibility = 'visible';
+
+        setTimeout(() => {
+            randomSquare.style.visibility = 'hidden';
+        }, 500); // Hilang setelah 500ms
+    }
+
+    function increaseScore(id) {
+        score++;
+        scoreElement.textContent = `Skor: ${score}`;
+    }
+
+    function startGame() {
+        score = 0;
+        scoreElement.textContent = `Skor: ${score}`;
+        startBtn.disabled = true;
+
+        const endTime = Date.now() + gameDuration * 1000;
+
+        gameInterval = setInterval(() => {
+            if (Date.now() > endTime) {
+                clearInterval(gameInterval);
+                // alert(`Waktu habis! Skor akhir: ${score}`);
+                startBtn.disabled = false;
+                return;
+            }
+            showRandomSquare();
+        }, 1000); // Menampilkan kotak acak setiap 1 detik
+    }
+
+    startBtn.addEventListener('click', startGame);
+</script>
+
+</body>
+</html>

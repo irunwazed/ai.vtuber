@@ -1,0 +1,189 @@
+{% extends "base.html" %} {% block title %}Datasets{% endblock %} {% block head
+  %} {{ super() }}
+  <style type="text/tailwindcss">
+ 
+  </style>
+  {% endblock %} {% block content %}
+  
+  <dialog id="dialog" >
+    <div onclick="closeDialog()" class="absolute w-full h-full z-0 ">
+    </div>
+    <div class="w-[90%] bg-white shadow-lg shadow-slate-100/30 rounded-lg p-4 z-10">
+      <form action="">
+        <input type="text" name="id" class="hidden">
+        <div class="form-control">
+          <label for="">Pertanyaan :</label>
+          <input type="text" name="question">
+        </div>
+        <div class="form-control">
+          <label for="">Jawaban :</label>
+          <textarea name="answer" class="max-h-[95%] min-h-[50px] h-[300px]"></textarea>
+        </div>
+
+        <div class="form-control">
+          <label for="">Source :</label>
+          <input type="text" name="source">
+        </div>
+        <button class="btn" type="button" onclick="store()">Simpan</button>
+      </form>
+    </div>
+  </dialog>
+
+  <dialog id="dialog-delete">
+    <div onclick="closeDialogDelete()" class="absolute w-full h-full z-0 ">
+    </div>
+
+    <div class="w-[500px] bg-white shadow-lg shadow-slate-100/30 rounded-lg p-4 z-10">
+      <h3>Apakah Anda yakin hapus "<span id="delete-name" class="font-bold text-red-500"></span>"?</h3>
+      <div class="mt-4 flex justify-between">
+
+      <button onclick="deleteDoc()" class="btn">Ya</button>
+      <button onclick="closeDialogDelete()" class="btn-info ">Batal</button>
+      </div>
+    </div>
+
+  </dialog>
+  <div class="p-4">
+
+    <button class="btn" onclick="openDialog()">Tambah</button>
+
+    <table>
+      <thead>
+        <tr>
+          <th class="w-[10px]">No</th>
+          <th class="py-2 px-4 text-center">Pertanyaan</th>
+          <th class="py-2 px-4 text-center">Jawaban</th>
+          <th class="py-2 px-4 text-center">Sumber</th>
+          <th class="py-2 px-4 text-center">Status</th>
+          <th class="py-2 px-4 text-center">Penulis</th>
+          <th class="py-2 px-4 text-center">Dibuat</th>
+          <th class="py-2 px-4 text-center">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for doc in datasets %} {% set outer_loop = loop %} {% set id = doc["id"] %}
+        <tr>
+          <td class="text-center">{{ ((pagination["page"]-1)*pagination["per_page"])+outer_loop.index }}</td>
+          <td>{{doc["question"]}}</td>
+          <td>{{(doc["answer"])}}</td>
+          <td>{{doc["source"]}}</td>
+          <td>{{doc["status"]}}</td>
+          <td>{{doc["created_by"]}}</td>
+          <td>{{doc["created_at"]}}</td>
+          <td class="flex gap-2 py-2">
+            <div class="text-green-100 p-2 bg-green-600 rounded-lg hover:bg-green-700 cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-question"><path d="M12 17h.01"/><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3"/></svg>
+            </div>
+            <div onclick="openDialog('{{id}}', `{{doc['question']}}`, `{{doc['answer']}}`, `{{doc['source']}}`)" class="text-blue-100 p-2 bg-blue-600 rounded-lg hover:bg-blue-700 cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
+            </div>
+            <div onclick="openDialogDelete('{{id}}', `{{doc['question']}}`)" class="text-red-100 p-2 bg-red-600 rounded-lg hover:bg-red-700 cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  
+    <div class="pagination">
+      <ul>
+        <li><a href="?page={{pagination["page"]-1}}&per_page=10">Sebelumnya</a></li>
+        <li>{{pagination["page"]}}</li>
+        <li><a href="?page={{pagination["page"]+1}}&per_page=10">Selanjutnya</a></li>
+      </ul>
+    </div>
+  </div>
+  {% endblock %}
+  
+  {% block script %}
+
+  <script>
+
+    const fileInput = document.getElementById('file-input');  
+    const dialog = document.getElementById("dialog")
+    const dialogDelete = document.getElementById("dialog-delete")
+    const deleteNameElement = document.getElementById("delete-name")
+
+    const nameElement = document.querySelector('input[name="question"]');
+    const contextElement = document.querySelector('textarea[name="answer"]');
+    const idElement = document.querySelector('input[name="id"]');
+    const sourceElement = document.querySelector('input[name="source"]')
+
+   
+    let deletedId = 0;
+    let deletedName = "";
+    let action = ""
+
+    function openDialog(id = null, name = null, context = null, source = null){
+      if(id && name && context){
+        action = "edit"
+        nameElement.value = name
+        contextElement.value = context
+        idElement.value = id
+        sourceElement.value = source
+      }else {
+        action = "add"
+      }
+      dialog.classList.add("active")
+    }
+    function closeDialog(){
+      dialog.classList.remove("active")
+    }
+
+    function openDialogDelete(id, name){
+      deletedId = id
+      deletedName = name
+      console.log("data", id, name)
+      deleteNameElement.innerHTML = deletedName
+      dialogDelete.classList.add("active")
+    }
+    function closeDialogDelete(){
+      dialogDelete.classList.remove("active")
+    }
+
+
+    async function store() {
+      if(action == "add"){
+        save()
+      }else{
+        update()
+      }
+    }
+
+    async function save(){
+      loading(true)
+      const respon = await post("/admin/dataset/save", {
+        question: nameElement.value,
+        answer: contextElement.value,
+        source: sourceElement.value
+      })
+      window.location.reload()
+
+      loading(false)
+    }
+
+    async function update(){
+      loading(true)
+
+      const respon = await post("/admin/dataset/update", {
+        id: idElement.value,
+        question: nameElement.value,
+        answer: contextElement.value,
+        source: sourceElement.value
+      })
+      window.location.reload()
+
+      loading(false)
+    }
+
+    async function deleteDoc() {
+      loading(true)
+      const respon = await get("/admin/dataset/delete/"+deletedId)
+      console.log("respon", respon)
+      window.location.reload()
+
+      loading(false)
+    }
+  </script>
+  {% endblock %}

@@ -1,17 +1,18 @@
 import json
 import ollama # type: ignore
 
-def ollama_chat(text):
+# MODEL = "llama3.2" # "deepseek-r1:8b" # "llama3.2"
+
+def ollama_chat(text, model = "llama3.2"):
   result = "Maaf saya tidak mengerti!"
   try:
     conversation = []
     conversation.append({"role": "user", "content": text})
-    response = ollama.chat(model="llama3.2", messages=conversation)
+    response = ollama.chat(model=model, messages=conversation)
     result = response['message']['content']
   except Exception as e:
     print("ERROR : ", e)
   return result
-
 
 def chat_with_ollama():
   print("Start chatting with Ollama. Type 'exit' to quit.\n")

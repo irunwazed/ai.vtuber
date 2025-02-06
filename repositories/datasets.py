@@ -8,6 +8,9 @@ from nltk.corpus import stopwords # type: ignore
 
 import os
 
+
+nltk.download('stopwords')
+
 # directory_path = "datasets/jdih"
 
 def create_datasets_rag(path_dir, save_as):
@@ -91,10 +94,12 @@ def set_label(path_json):
 
 def search_documents(query, top_k=3):
   all_docs = database.fetch_all_documents()
-  docs_text = [doc[2] for doc in all_docs]
-  docs_judul_text = [doc[1] for doc in all_docs]
 
-  nltk.download('stopwords')
+  # if doc["name"] and len(doc["desc"]) > 100:
+  docs_text = [doc[2] for doc in all_docs if doc[1] and len(doc[2]) > 1000]
+  docs_judul_text = [doc[1] for doc in all_docs if doc[1] and len(doc[2]) > 1000]
+  print("panjang", len(docs_judul_text))
+
   stop_words_indonesian = stopwords.words('indonesian')
    
   # Gunakan TF-IDF untuk mengubah dokumen dan query menjadi vektor

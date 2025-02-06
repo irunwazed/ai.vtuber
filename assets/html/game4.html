@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Mobil: Hindari Rintangan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .game-container {
+            position: relative;
+            width: 400px;
+            height: 600px;
+            background-color: #2c3e50;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #34495e;
+        }
+        .car {
+            position: absolute;
+            bottom: 20px;
+            left: 150px;
+            width: 50px;
+            height: 100px;
+            background-color: #e74c3c;
+            border-radius: 5px;
+        }
+        .obstacle {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: #27ae60;
+            border-radius: 5px;
+            top: -50px;
+        }
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 20px;
+            color: white;
+        }
+        #game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+            color: white;
+            display: none;
+        }
+        #restart-btn {
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 20px;
+            cursor: pointer;
+            display: none;
+        }
+        #restart-btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div id="score">Skor: 0</div>
+    <div id="game-over">Game Over!</div>
+    <button id="restart-btn">Mulai Ulang</button>
+    <div class="car" id="car"></div>
+</div>
+
+<script>
+    const car = document.getElementById('car');
+    const gameContainer = document.querySelector('.game-container');
+    const scoreElement = document.getElementById('score');
+    const gameOverElement = document.getElementById('game-over');
+    const restartBtn = document.getElementById('restart-btn');
+
+    let carPositionX = 150;  // Posisi horizontal mobil
+    let score = 0;
+    let obstacles = [];
+    let gameInterval;
+    let obstacleInterval;
+    let gameOver = false;
+
+    const carWidth = 50;
+    const carHeight = 100;
+    const gameWidth = 400;
+    const gameHeight = 600;
+
+    // Fungsi untuk menggerakkan mobil
+    function moveCar(event) {
+        if (gameOver) return;  // Jika game over, tidak bisa bergerak
+
+        if (event.key === 'ArrowLeft' && carPositionX > 0) {
+            carPositionX -= 10;
+        } else if (event.key === 'ArrowRight' && carPositionX < gameWidth - carWidth) {
+            carPositionX += 10;
+        }
+        car.style.left = `${carPositionX}px`;
+    }
+
+    // Fungsi untuk membuat rintangan
+    function createObstacle() {
+        if (gameOver) return;
+
+        const obstacle = document.createElement('div');
+        obstacle.classList.add('obstacle');
+        obstacle.style.left = `${Math.random() * (gameWidth - 50)}px`;  // Posisi acak untuk rintangan
+        gameContainer.appendChild(obstacle);
+        obstacles.push(obstacle);
+    }
+
+    // Fungsi untuk memindahkan rintangan
+    function moveObstacles() {
+        if (gameOver) return;
+
+        for (let i = 0; i < obstacles.length; i++) {
+            const obstacle = obstacles[i];
+            const obstacleTop = parseInt(obstacle.style.top) || 0;
+
+            if (obstacleTop > gameHeight) {
+                // Rintangan sudah keluar dari layar, hapus
+                gameContainer.removeChild(obstacle);
+                obstacles.splice(i, 1);
+                score++;
+                scoreElement.textContent = `Skor: ${score}`;
+                i--;  // Kurangi index karena kita menghapus item dari array
+            } else {
+                obstacle.style.top = `${obstacleTop + 5}px`;  // Gerakkan rintangan ke bawah
+            }
+
+            // Cek tabrakan dengan mobil
+            if (isCollision(obstacle)) {
+                gameOver = true;
+                clearInterval(gameInterval);
+                clearInterval(obstacleInterval);
+                gameOverElement.style.display = 'block';
+                restartBtn.style.display = 'block';  // Tampilkan tombol Mulai Ulang
+            }
+        }
+    }
+
+    // Fungsi untuk memeriksa tabrakan antara mobil dan rintangan
+    function isCollision(obstacle) {
+        const carRect = car.getBoundingClientRect();
+        const obstacleRect = obstacle.getBoundingClientRect();
+
+        return !(carRect.right < obstacleRect.left ||
+                 carRect.left > obstacleRect.right ||
+                 carRect.bottom < obstacleRect.top ||
+                 carRect.top > obstacleRect.bottom);
+    }
+
+    // Fungsi untuk memulai game
+    function startGame() {
+        gameOver = false;
+        score = 0;
+        scoreElement.textContent = `Skor: 0`;
+        gameOverElement.style.display = 'none';
+        restartBtn.style.display = 'none';  // Sembunyikan tombol Mulai Ulang
+
+        // Hapus semua rintangan yang ada di layar
+        obstacles.forEach(obstacle => {
+            gameContainer.removeChild(obstacle);
+        });
+        obstacles = [];  // Kosongkan array rintangan
+
+        carPositionX = 150;
+        car.style.left = `${carPositionX}px`;
+
+        // Interval untuk membuat rintangan
+        obstacleInterval = setInterval(createObstacle, 1000);  // Buat rintangan setiap 1 detik
+        // Interval untuk memindahkan rintangan
+        gameInterval = setInterval(moveObstacles, 20);  // Update posisi rintangan setiap 20ms
+    }
+
+    // Mulai game saat pengguna menekan tombol
+    document.addEventListener('keydown', moveCar);
+
+    // Event listener untuk tombol mulai ulang
+    restartBtn.addEventListener('click', startGame);
+
+    // Mulai game ketika halaman dimuat
+    window.onload = startGame;
+</script>
+
+</body>
+</html>
