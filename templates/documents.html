@@ -55,7 +55,7 @@
       <button onclick="closeDialogDelete()" class="btn-info ">Batal</button>
       </div>
     </div>
-    
+
   </dialog>
 
   <dialog id="dialog-question">
@@ -330,20 +330,20 @@ Jawaban:`
     async function deleteDoc() {
       loading(true)
       const respon = await get("/admin/document/delete/"+deletedId)
-      console.log("respon", respon)
       if(!respon.status) alert("Gagal masuk")
       window.location.reload()
-
       loading(false)
     }
 
-
-
     async function text_to_array(text){
-      const respon = await post("/text-to-array", {
-        text: text,
-      })
-      return respon.data.array
+      try{
+        const respon = await post("/text-to-array", {
+          text: text,
+        })
+        if(!respon.status) return []
+        return respon.data?.array
+      }catch(err){}
+      return []
     }
 
     
@@ -362,31 +362,34 @@ Jawaban:`
 
     async function generateAnswer() {
       loading(true)
-      const template = promptTemplateAnswerElement.value
-      const document = promptContextElement.value
-      const questionsText = promptResultElement.value
-      const questions = await text_to_array(questionsText)
+      try{
+        const template = promptTemplateAnswerElement.value
+        const document = promptContextElement.value
+        const questionsText = promptResultElement.value
+        const questions = await text_to_array(questionsText)
 
-      console.log("questions", questions)
+        if(questions.length == 0){
+          alert("Gagal mengambil jawaban dari text")
+          return
+        }
 
-      if(questions.length == 0){
-        alert("Gagal mengambil jawaban dari text")
-        return
+        let result = []
+        for(let i = 0; i < questions.length; i++){
+          const question = questions[i].question
+          const data = template.replace("{context}", document).replace("{question}", question)
+          const respon = await prompt(data, true)
+          const answer = respon.data.respon
+          result.push({
+            question: question,
+            answer: answer
+          })
+        }
+        promptResultAnswerElement.value = JSON.stringify(result)
+        handleResult()
+      }catch(err){
+
       }
-
-      let result = []
-      for(let i = 0; i < questions.length; i++){
-        const question = questions[i].question
-        const data = template.replace("{context}", document).replace("{question}", question)
-        const respon = await prompt(data, true)
-        const answer = respon.data.respon
-        result.push({
-          question: question,
-          answer: answer
-        })
-      }
-      promptResultAnswerElement.value = JSON.stringify(result)
-      handleResult()
+    
       loading(false)
     }
 

@@ -34,7 +34,7 @@
       }
 
       thead tr {
-        @apply bg-slate-500 text-slate-100
+        @apply bg-slate-500 text-slate-100;
       }
 
       table th {
@@ -42,17 +42,16 @@
       }
 
       tbody {
-        @apply text-[13px]
+        @apply text-[13px];
       }
 
       tbody tr:nth-child(even) {
-        @apply hover:bg-slate-300
+        @apply hover:bg-slate-300;
       }
 
       tbody tr:nth-child(odd) {
-        @apply bg-slate-200 hover:bg-slate-300
+        @apply bg-slate-200 hover:bg-slate-300;
       }
-
 
       .pagination {
         @apply w-full flex mt-2 justify-end;
@@ -74,45 +73,65 @@
       }
 
       .btn {
-        @apply py-2 px-4 rounded-md bg-slate-600 text-slate-100 hover:bg-slate-700 cursor-pointer
+        @apply py-2 px-4 rounded-md bg-slate-600 text-slate-100 hover:bg-slate-700 cursor-pointer;
       }
 
       .btn-info {
-        @apply py-2 px-4 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer
+        @apply py-2 px-4 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer;
       }
 
       .form-control {
-    @apply flex flex-col my-2
-   }
-   .form-control label {
-    @apply text-base
-   }
+        @apply flex flex-col my-2;
+      }
+      .form-control label {
+        @apply text-base;
+      }
 
-   .form-control input {
-    @apply ring-1 ring-slate-500 rounded-sm p-2
-    }
-    .form-control select {
-    @apply ring-1 ring-slate-500 rounded-sm p-2
-    }
+      .form-control input {
+        @apply ring-1 ring-slate-500 rounded-sm p-2;
+      }
+      .form-control select {
+        @apply ring-1 ring-slate-500 rounded-sm p-2;
+      }
 
-    .form-control textarea {
-    @apply ring-1 ring-slate-500 rounded-sm p-2
-    }
-
+      .form-control textarea {
+        @apply ring-1 ring-slate-500 rounded-sm p-2;
+      }
     </style>
     <title>{% block title %}{% endblock %} - My Webpage</title>
     {% endblock %}
   </head>
   <body>
-
-    
-    <div id="loading-all" class="fixed top-0 w-full h-screen z-100 bg-slate-700/70 flex justify-center items-center flex-col text-white text-3xl font-bold">
+    <div
+      id="loading-all"
+      class="fixed top-0 w-full h-screen z-100 bg-slate-700/70 flex justify-center items-center flex-col text-white text-3xl font-bold"
+    >
       LOADING
       <div class="flex">
-        <iframe id="game1" src="/assets/html/game.html" class="hidden h-[340px]" frameborder="0"></iframe>
-        <iframe id="game2" src="/assets/html/game2.html" class="hidden h-[450px] w-[800px]" frameborder="0"></iframe>
-        <iframe id="game3" src="/assets/html/game3.html" class="hidden h-[660px] w-[360px]" frameborder="0"></iframe>
-        <iframe id="game4" src="/assets/html/game4.html" class="hidden h-[600px] w-[400px]" frameborder="0"></iframe>
+        <iframe
+          id="game1"
+          src="/assets/html/game.html"
+          class="hidden h-[340px]"
+          frameborder="0"
+        ></iframe>
+        <iframe
+          id="game2"
+          src="/assets/html/game2.html"
+          class="hidden h-[450px] w-[800px]"
+          frameborder="0"
+        ></iframe>
+        <iframe
+          id="game3"
+          src="/assets/html/game3.html"
+          class="hidden h-[660px] w-[360px]"
+          frameborder="0"
+        ></iframe>
+        <iframe
+          id="game4"
+          src="/assets/html/game4.html"
+          class="hidden h-[600px] w-[400px]"
+          frameborder="0"
+        ></iframe>
       </div>
     </div>
     <nav>
@@ -135,112 +154,119 @@
     </div>
 
     <script>
-      const loadingAllElement = document.getElementById("loading-all")
-          const get =  async (url) => {
-            const respon = await fetch(url).then(async (res) => {
-              const data = await res.json()
-              return {
-                status: true,
-                data: data
-              }
-            }).catch(err => {
-              return {
-                status: false,
-                data: null,
-                errors: err
-              }
-            })
-            return respon
-            // console.log("respon", respon)
+      const loadingAllElement = document.getElementById("loading-all");
+      const get = async (url) => {
+        const respon = await fetch(url, {
+          method: "GET",
+          headers: new Headers({
+            "ngrok-skip-browser-warning": "69420",
+          }),
+        })
+          .then(async (res) => {
+            const data = await res.json();
+            return {
+              status: true,
+              data: data,
+            };
+          })
+          .catch((err) => {
+            return {
+              status: false,
+              data: null,
+              errors: err,
+            };
+          });
+        return respon;
+      };
+
+      const postUpload = async (url, formData) => {
+        const respon = await fetch(url, {
+          method: "POST",
+          headers: new Headers({
+            "ngrok-skip-browser-warning": "69420",
+          }),
+          body: formData, 
+        })
+          .then(async (res) => {
+            const data = await res.json();
+            return {
+              status: true,
+              data: data,
+            };
+          })
+          .catch((err) => {
+            return {
+              status: false,
+              data: null,
+              errors: err,
+            };
+          });
+        return respon;
+      };
+
+      const post = async (url, data) => {
+        const respon = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "69420",
+          },
+          body: JSON.stringify(data), // Kirimkan form data berisi file
+        })
+          .then(async (res) => {
+            const data = await res.json();
+            return {
+              status: true,
+              data: data,
+            };
+          })
+          .catch((err) => {
+            return {
+              status: false,
+              data: null,
+              errors: err,
+            };
+          });
+        return respon;
+      };
+
+      async function prompt(prompt, clear = false) {
+        // loading(true)
+        const respon = await post("/admin/prompt", {
+          prompt: prompt,
+          clear: clear,
+        });
+        // loading(false)
+        return respon;
+      }
+
+      const loading = (status = true) => {
+        let game = [];
+
+        game[0] = document.getElementById("game1");
+        game[1] = document.getElementById("game2");
+        game[2] = document.getElementById("game3");
+        game[3] = document.getElementById("game4");
+
+        let randomInt = Math.floor(Math.random() * 4);
+
+        for (let i = 0; i < game.length; i++) {
+          if (i == randomInt) {
+            game[i].classList.remove("hidden");
+          } else {
+            game[i].classList.add("hidden");
           }
+        }
 
-          const postUpload = async (url, formData) => {
-            const respon = await fetch(url, {
-              method: 'POST',
-              body: formData, // Kirimkan form data berisi file
-            }).then(async (res) => {
-              const data = await res.json()
-              return {
-                status: true,
-                data: data
-              }
-            }).catch(err => {
-              return {
-                status: false,
-                data: null,
-                errors: err
-              }
-            })
-            return respon
-          }
-
-          const post = async (url, data) => {
-            const respon = await fetch(url, {
-              method: 'POST',
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify(data), // Kirimkan form data berisi file
-            }).then(async (res) => {
-              const data = await res.json()
-              return {
-                status: true,
-                data: data
-              }
-            }).catch(err => {
-              return {
-                status: false,
-                data: null,
-                errors: err
-              }
-            })
-            return respon
-          }
-
-
-          async function prompt(prompt, clear = false){
-            // loading(true)
-            const respon = await post("/admin/prompt", {
-              prompt: prompt,
-              clear: clear
-            })
-            // loading(false)
-            return respon
-          }
-
-          const loading = (status = true) => {
-
-            let game = []
-
-            game[0] = document.getElementById("game1")
-            game[1] = document.getElementById("game2")
-            game[2] = document.getElementById("game3")
-            game[3] = document.getElementById("game4")
-
-            let randomInt = Math.floor(Math.random() * 4);
-
-            for(let i = 0; i < game.length; i++){
-              if(i == randomInt){
-                game[i].classList.remove("hidden")
-              }else{
-                game[i].classList.add("hidden")
-              }
-
-            }
-
-
-
-
-            
-            if(status){
-              loadingAllElement.classList.add("fixed")
-              loadingAllElement.classList.remove("hidden")
-            }else {
-              loadingAllElement.classList.remove("fixed")
-              loadingAllElement.classList.add("hidden")
-            }
-          }
-          loading(false)
+        if (status) {
+          loadingAllElement.classList.add("fixed");
+          loadingAllElement.classList.remove("hidden");
+        } else {
+          loadingAllElement.classList.remove("fixed");
+          loadingAllElement.classList.add("hidden");
+        }
+      };
+      loading(false);
     </script>
 
     {% block script %} {% endblock %}
