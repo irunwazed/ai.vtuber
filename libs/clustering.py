@@ -2,8 +2,7 @@ import numpy as np # type: ignore
 from sklearn.feature_extraction.text import TfidfVectorizer # type: ignore
 from sklearn.cluster import KMeans # type: ignore
 from sklearn.metrics import silhouette_score # type: ignore
-import nltk # type: ignore
-from nltk.corpus import stopwords # type: ignore
+from libs import stop_words
 
 def testing(dokumen):
   # Contoh data: 
@@ -17,8 +16,8 @@ def testing(dokumen):
   # dokumen = dokumen * (100 // len(dokumen)) + dokumen[: 100 % len(dokumen)]
 
   # Unduh stopword bahasa Indonesia jika belum tersedia
-  nltk.download('stopwords')
-  stop_words_indonesian = stopwords.words('indonesian')
+  # nltk.download('stopwords')
+  # stop_words_indonesian = stopwords.words('indonesian')
 
 
 
@@ -30,7 +29,7 @@ def testing(dokumen):
   # print("dokumen", dokumen)
 
   # Langkah 2: Konversi teks ke representasi numerik (TF-IDF)
-  tfidf_vectorizer = TfidfVectorizer(stop_words=stop_words_indonesian)
+  tfidf_vectorizer = TfidfVectorizer(stop_words=stop_words.stop_words_indonesian)
 
   # print("tfidf_vectorizer", tfidf_vectorizer)
   tfidf_matrix = tfidf_vectorizer.fit_transform(dokumen)
@@ -73,8 +72,8 @@ def get_labels(dokumen, max_label):
   # max_label = 20
 
   # Unduh stopword bahasa Indonesia jika belum tersedia
-  nltk.download('stopwords')
-  stop_words_indonesian = stopwords.words('indonesian')
+  # nltk.download('stopwords')
+  # stop_words_indonesian = stopwords.words('indonesian')
 
   # Langkah 1: Preprocessing teks
   def preprocess_teks(dok):
@@ -84,7 +83,7 @@ def get_labels(dokumen, max_label):
   # print("dokumen", dokumen)
 
   # Langkah 2: Konversi teks ke representasi numerik (TF-IDF)
-  tfidf_vectorizer = TfidfVectorizer(stop_words=stop_words_indonesian)
+  tfidf_vectorizer = TfidfVectorizer(stop_words=stop_words.stop_words_indonesian)
   tfidf_matrix = tfidf_vectorizer.fit_transform(dokumen)
 
   # Langkah 3: Tentukan jumlah cluster terbaik menggunakan silhouette score

@@ -1,7 +1,7 @@
 
 from sklearn.feature_extraction.text import TfidfVectorizer # type: ignore
 from sklearn.metrics.pairwise import cosine_similarity # type: ignore
-from libs import pdf, helpers, clustering, database
+from libs import pdf, helpers, clustering, database, match
 import json
 import nltk # type: ignore
 from nltk.corpus import stopwords # type: ignore
@@ -134,3 +134,32 @@ def search_documents(query, top_k=3):
   
   
   return relevant_docs
+
+
+def match_documents(query):
+  all_docs = database.fetch_all_documents()
+
+  # if doc["name"] and len(doc["desc"]) > 100:
+  docs_text = [doc[2] for doc in all_docs if doc[1] and len(doc[2]) > 1000]
+  docs_judul_text = [doc[1] for doc in all_docs if doc[1] and len(doc[2]) > 1000]
+
+  bert = match.sentence_to_bert_vector(query)
+  print("bert",bert[0])
+  print(helpers.string_to_numpy_array(helpers.numpy_to_json_string(bert))[0])
+  
+
+  cosinus_judul = match.match_with_cosine_similarity(docs_judul_text, query)
+  # bert_judul = match.match_with_bert(docs_judul_text, query)
+
+
+  cosinus = match.match_with_cosine_similarity(docs_text, query)
+  # bert = match.match_with_bert(docs_text, query)
+
+
+  # print("judul")
+  # print(cosinus_judul)
+  # # print(bert_judul)
+  # print("isi")
+  # print(cosinus)
+  # # print(bert)
+

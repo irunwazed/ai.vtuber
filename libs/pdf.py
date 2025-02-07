@@ -31,18 +31,16 @@ def upload_pdf_to_text(file: UploadFile):
   except Exception as e:
     return f"An error occurred: {e}"
   
-async def pdf_ocr_to_text(file: UploadFile, filename:str):
-    file_location = const.UPLOAD_DIR_DOCUMENT / filename
-    with open(file_location, "wb") as f:
-        content = await file.read()
-        f.write(content)
+def pdf_ocr_to_text(file_location):
 
     pages = convert_from_path(file_location, 300) 
     # file_location.unlink()
 
+    custom_config = r'--oem 3 --psm 6'
+    custom_config = ""
     text = ""
     for page in pages:
-        page_text = pytesseract.image_to_string(page)
+        page_text = pytesseract.image_to_string(page, config=custom_config)
         text += page_text + "\n"
     
     return text

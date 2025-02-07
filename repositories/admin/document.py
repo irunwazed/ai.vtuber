@@ -7,21 +7,21 @@ def get(page, per_page):
   rows = cursor.fetchall()
   return [dict(zip(columns, list(row))) for row in rows]
 
-def save(name, context, url, type):
+def save(name, name_value, context, context_value, url, type):
   cursor = conn.cursor()
   cursor.execute('''
-  INSERT INTO documents (name, context, url, type)
-  VALUES (?, ?, ?, ?)
-  ''', (name, context, url, type))
+  INSERT INTO documents (name, name_value, context, context_value, url, type)
+  VALUES (?, ?, ?, ?, ?, ?)
+  ''', (name, name_value, context, context_value, url, type))
   conn.commit()
 
-def update(id, name, context, url, type):
+def update(id, name, name_value, context, context_value, url, type):
   cursor = conn.cursor()
   cursor.execute('''
   UPDATE documents
-  SET name = ?, context = ?, url = ?, type = ?
+  SET name = ?, name_value = ?, context = ?, context_value = ?, url = ?, type = ?
   WHERE id = ?
-  ''', (name, context, url, type, id))  # Pass id as the third parameter
+  ''', (name, name_value, context, context_value, url, type, id))  # Pass id as the third parameter
   conn.commit()
 
 

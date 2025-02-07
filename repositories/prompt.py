@@ -20,3 +20,5 @@ def create_dataset_by_context(document):
     """
     data = llm.ollama_chat(prompt)
     return clear.extract_data_from_text(data)
+
+

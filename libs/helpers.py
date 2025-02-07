@@ -2,6 +2,11 @@ import re
 import json
 import os
 
+from fastapi import UploadFile # type: ignore
+from libs import const
+
+import numpy as np # type: ignore
+
 
 
 def clean_html(raw_html):
@@ -54,3 +59,24 @@ def load_file(file_path):
   with open(file_path, "r") as file:
     content = file.read()
   return content
+
+async def upload(file: UploadFile, filename:str):
+    file_location = const.UPLOAD_DIR_DOCUMENT / filename
+    with open(file_location, "wb") as f:
+        content = await file.read()
+        f.write(content)
+
+    return file_location
+
+
+def string_to_numpy_array(data_str):
+    try:
+        data_list = json.loads(data_str)
+        numpy_array = np.array(data_list)
+        return numpy_array
+    except Exception as e:
+        print(f"Terjadi kesalahan: {e}")
+        return None
+
+def numpy_to_json_string(np_array):
+    return json.dumps(np_array.tolist())

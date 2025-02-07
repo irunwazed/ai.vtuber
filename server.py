@@ -5,13 +5,13 @@ from fastapi.staticfiles import StaticFiles # type: ignore
 from fastapi.middleware.cors import CORSMiddleware # type: ignore
 from fastapi.exceptions import HTTPException # type: ignore
 import uvicorn # type: ignore
-from libs import helpers, llm, pdf, const, clear
+from libs import helpers, llm, pdf, const, clear, match
 from repositories.admin import document, dataset
-from repositories import prompt
+from repositories import prompt,  datasets
 from pydantic import BaseModel # type: ignore
 import os
 from typing import List, Dict
-
+import shutil
 
 
 from repositories import chatbot
@@ -82,14 +82,78 @@ async def read_root(request: Request):
 
 @app.get("/testing", response_class=HTMLResponse)
 async def read_root(request: Request):
-    name = "PERBERSAMA KEPALA LAN NO.16 TAHUN 2014 DAN KEPALA BKN NO.16 TAHUN 2014 - KETENTUAN PELAKSANAAN PERMENPAN DAN RB NO.45 TAHUN 2013 TENTANG JF ANALIS KEBIJAKAN DAN AK"
+    # name = "PERBERSAMA KEPALA LAN NO.16 TAHUN 2014 DAN KEPALA BKN NO.16 TAHUN 2014 - KETENTUAN PELAKSANAAN PERMENPAN DAN RB NO.45 TAHUN 2013 TENTANG JF ANALIS KEBIJAKAN DAN AK"
     
-    data = document.get_by_name(name)
+    # data = document.get_by_name(name)
 
-    respon = prompt.create_dataset_by_context(data["context"])
+    # respon = prompt.create_dataset_by_context(data["context"])
+
+
+    # query = "jelaskan tentang undang undang"
+    # datasets.match_documents(query)
+
+    directory_path = './datasets/KELOMPOK PPU'
+
+    files_and_dirs = os.listdir(directory_path)
+
+    data = []
+    for label in files_and_dirs:
+        if label != ".DS_Store":
+            files = os.listdir(directory_path+'/'+label)
+            for file in files:
+                data.append({
+                    "label": label,
+                    "file": file
+                })
+
+
+    # for doc in data:
+    #     label = doc["label"]
+    #     file = doc["file"]
+    #     if ".pdf" in file:
+    #         name = file.replace(".pdf", "")
+    #         filename = clear.generate_random_string(12)+ "_" + clear.space_to_under(file)
+
+    #         path_file = directory_path+"/"+label+"/"+file
+    #         to_file = const.UPLOAD_DIR_DOCUMENT / filename
+
+    #         shutil.copy(path_file, to_file)
+
+    #         context = "" # pdf.pdf_ocr_to_text(path_file)
+
+    #         name_value = helpers.numpy_to_json_string(match.sentence_to_bert_vector(name))
+    #         context_value = helpers.numpy_to_json_string(match.sentence_to_bert_vector(context))
+
+
+    label = data[0]["label"]
+    file = data[0]["file"]
+    if ".pdf" in file:
+        name = file.replace(".pdf", "")
+        filename = clear.generate_random_string(12)+ "_" + clear.space_to_under(file)
+
+        path_file = directory_path+"/"+label+"/"+file
+        to_file = const.UPLOAD_DIR_DOCUMENT / filename
+
+        shutil.copy(path_file, to_file)
+
+        context = pdf.pdf_ocr_to_text(path_file)
+
+        name_value = helpers.numpy_to_json_string(match.sentence_to_bert_vector(name))
+        context_value = helpers.numpy_to_json_string(match.sentence_to_bert_vector(context))
+
+
+    document.save(name, name_value, context, context_value, filename, 1)
 
     result = {
-        "data": respon
+        "data": {
+            "label": label,
+            "file": file,
+            "filename": filename,
+            "name": name,
+            "context": context,
+            "name_value": name_value,
+            "context_value": context_value,
+        }
     }
     return JSONResponse(content=result)
 
@@ -119,7 +183,8 @@ async def chat_message(chat:str):
 @app.post("/doc-to-text", response_class=HTMLResponse)
 async def chat_message(file:UploadFile):
     filename = clear.generate_random_string(12)+ "_" + clear.space_to_under(file.filename)
-    text = await pdf.pdf_ocr_to_text(file, filename)
+    path_file = await helpers.upload(file, filename)
+    text = pdf.pdf_ocr_to_text(path_file)
     result =  {
         "name": file.filename,
         "desc": text,
@@ -204,8 +269,11 @@ async def document_save(body: RequestSaveDocument):
     check = document.get_by_name(body.name)
     if check:
         raise HTTPException(status_code=400, detail="Nama Dokumen sudah ada")
-    document.save(body.name, body.context, body.url, body.type)
-    print("req", body)
+    
+    name_value = helpers.numpy_to_json_string(match.sentence_to_bert_vector(body.name))
+    context_value = helpers.numpy_to_json_string(match.sentence_to_bert_vector(body.context))
+
+    document.save(body.name, name_value, body.context, context_value, body.url, body.type)
     result =  {
         "message": "Berhasil simpan"
     }
@@ -214,7 +282,11 @@ async def document_save(body: RequestSaveDocument):
 @app.post("/admin/document/update", response_class=HTMLResponse)
 async def document_update(body: RequestUpdateDocument):
     
-    document.update(body.id, body.name, body.context, body.url, body.type)
+
+    name_value = helpers.numpy_to_json_string(match.sentence_to_bert_vector(body.name))
+    context_value = helpers.numpy_to_json_string(match.sentence_to_bert_vector(body.context))
+
+    document.update(body.id, body.name, name_value, body.context, context_value, body.url, body.type)
     result =  {
         "message": "Berhasil simpan"
     }

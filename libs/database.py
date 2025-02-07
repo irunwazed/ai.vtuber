@@ -25,7 +25,9 @@ def create_table():
   CREATE TABLE IF NOT EXISTS documents (
       id INTEGER PRIMARY KEY,
       name TEXT NOT NULL,
+      name_value TEXT,
       context TEXT,
+      context_value TEXT,
       url TEXT,
       type INTEGER,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -58,7 +60,7 @@ def insert_document(name, context):
   conn.commit()
 
 def fetch_all_documents():
-  cursor = conn.cursor()
+  cursor = connDocu.cursor()
   cursor.execute('SELECT * FROM documents')
   rows = cursor.fetchall()
   result = []

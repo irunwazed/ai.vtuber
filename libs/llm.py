@@ -3,7 +3,7 @@ import ollama # type: ignore
 
 # MODEL = "llama3.2" # "deepseek-r1:8b" # "llama3.2"
 
-def ollama_chat(text, model = "llama3.2"):
+def ollama_chat(text, model = "deepseek-r1:8b"):
   result = "Maaf saya tidak mengerti!"
   try:
     conversation = []
