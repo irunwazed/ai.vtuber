@@ -47,6 +47,7 @@ def get_by_name(name):
           'context': row[2],
           'url': row[3]
       }
+  return result
 
 def get_by_id(id):
   cursor = conn.cursor()
